@@ -3,7 +3,7 @@ import { expect } from "chai";
 
 describe("LendingToken", function () {
   it("should set minter, mint, and burn", async function () {
-    const [owner, minter, user] = await ethers.getSigners();
+    const [_developer, minter, user] = await ethers.getSigners();
     const LendingToken = await ethers.getContractFactory("LendingToken");
     const token = await LendingToken.deploy("LendToken", "LTK");
     await token.deployed();
@@ -15,7 +15,7 @@ describe("LendingToken", function () {
     expect(await token.balanceOf(user.address)).to.equal(500);
   });
   it("should not allow non-minter to mint or burn", async function () {
-    const [owner, minter, user, attacker] = await ethers.getSigners();
+    const [_developer, minter, user, attacker] = await ethers.getSigners();
     const LendingToken = await ethers.getContractFactory("LendingToken");
     const token = await LendingToken.deploy("LendToken", "LTK");
     await token.deployed();

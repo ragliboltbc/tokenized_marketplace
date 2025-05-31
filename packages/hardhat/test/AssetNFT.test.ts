@@ -3,7 +3,7 @@ import { expect } from "chai";
 
 describe("AssetNFT", function () {
   it("should mint and store metadata", async function () {
-    const [owner, user] = await ethers.getSigners();
+    const [_developer, user] = await ethers.getSigners();
     const AssetNFT = await ethers.getContractFactory("AssetNFT");
     const assetNFT = await AssetNFT.deploy();
     await assetNFT.deployed();
