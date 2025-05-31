@@ -13,7 +13,7 @@ export default function MintAssetPage() {
   const [loading, setLoading] = useState(false);
   const [txHash, setTxHash] = useState("");
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
@@ -40,27 +40,34 @@ export default function MintAssetPage() {
           required
           autoComplete="off"
           style={{
-            color: "#f9fbff", // brighter text color for dark backgrounds
+            color: "#f9fbff",
             background: "rgba(255,255,255,0.05)",
             zIndex: 10,
             position: "relative",
           }}
         />
-        <input
+        <select
           name="assetType"
-          placeholder="Asset Type (e.g. Car, House)"
-          className="input input-bordered w-full"
+          className="input input-bordered w-full text-[#f9fbff]"
           value={form.assetType}
           onChange={handleChange}
           required
-          autoComplete="off"
           style={{
-            color: "#f9fbff", // brighter text color for dark backgrounds
+            color: form.assetType ? "#f9fbff" : "#6eb5db", // lighter if placeholder is active // exactly matches Asset Name color
             background: "rgba(255,255,255,0.05)",
             zIndex: 10,
             position: "relative",
           }}
-        />
+        >
+          <option value="" disabled>
+            Asset Type (e.g. Car, House)
+          </option>
+          <option value="Car">Car</option>
+          <option value="House">House</option>
+          <option value="Art">Art</option>
+          <option value="Jewelry">Jewelry</option>
+          <option value="Other">Other</option>
+        </select>
         <input
           name="legalId"
           placeholder="Legal ID (e.g. VIN)"
@@ -70,7 +77,7 @@ export default function MintAssetPage() {
           required
           autoComplete="off"
           style={{
-            color: "#f9fbff", // brighter text color for dark backgrounds
+            color: "#f9fbff",
             background: "rgba(255,255,255,0.05)",
             zIndex: 10,
             position: "relative",
@@ -85,7 +92,7 @@ export default function MintAssetPage() {
           required
           autoComplete="off"
           style={{
-            color: "#f9fbff", // brighter text color for dark backgrounds
+            color: "#f9fbff",
             background: "rgba(255,255,255,0.05)",
             zIndex: 10,
             position: "relative",
@@ -101,7 +108,7 @@ export default function MintAssetPage() {
           required
           autoComplete="off"
           style={{
-            color: "#f9fbff", // brighter text color for dark backgrounds
+            color: "#f9fbff",
             background: "rgba(255,255,255,0.05)",
             zIndex: 10,
             position: "relative",
