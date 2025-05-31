@@ -255,6 +255,11 @@
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
+.input::placeholder {
+  color: #7dd3fc !important;
+  opacity: 1;
+}
+
 .input:focus,
 .textarea:focus,
 .select:focus {
@@ -315,7 +320,7 @@
 
 /* Enhanced navbar styles */
 .navbar {
-  background: rgba(24, 41, 173, 0.555);
+  background: rgba(25, 40, 149, 0.555);
   backdrop-filter: blur(15px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
