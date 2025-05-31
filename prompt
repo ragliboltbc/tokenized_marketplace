@@ -1,0 +1,216 @@
+Functional Overview – Tokenized Marketplace Platform
+🔹 What is Tokenized Marketplace?
+The Tokenized Marketplace is a decentralized platform for tokenizing real-world assets (RWAs) and enabling lending-based co-ownership. Built on the Hedera EVM-compatible network, it allows users to:
+
+Mint NFTs representing physical assets like real estate, vehicles, or collectibles.
+
+Lend ETH to others and receive proportional ownership claims via ERC-20 or ERC-1155 tokens.
+
+Interact through a clean web interface, manage ownership, and track transaction history.
+
+This is an MVP-first project: simple, auditable, and ready to evolve in phases.
+
+🏗️ High-Level Architecture
+Layer	Tech Stack
+Frontend	Next.js, React, TailwindCSS, DaisyUI
+Contracts	Solidity (ERC-721, ERC-20/1155)
+Backend	TBD or optional (data indexing/fallback)
+Network	Hedera Testnet (via JSON-RPC Relay)
+Deployment	Vercel (frontend), Hardhat (contracts)
+
+🔐 Core Functionalities (MVP Phase 1)
+1. Asset Tokenization (NFTs)
+Assets are minted as ERC-721 tokens via AssetNFT.sol.
+
+Metadata includes:
+
+Name, Type (house/car/etc.), Legal ID, Brand, Estimated Value
+
+Auto-generated token ID ensures unique traceability.
+
+2. Lending & Co-Ownership (ERC-20 or ERC-1155)
+Anyone can lend ETH to help fund an asset.
+
+In return, LendingTokens are issued to represent fractional ownership or rights to yield.
+
+Lending logic is controlled by AssetLendingLink.sol, which ties together the NFT and LendingToken contracts.
+
+3. Integrated Smart Contract System
+Single contract deployment (MVP):
+
+Combines NFT minting, lending, and token issuance.
+
+Uses flat mappings to track asset states and proportions.
+
+Emits events on every change to allow clean indexing.
+
+🧩 Frontend Functional Modules
+🔹 Mint Asset
+Upload metadata for the asset.
+
+Choose category (e.g. car, house, collectible).
+
+Input legal identifiers (e.g., VIN, registration).
+
+Submit to mint the NFT representing the real-world asset.
+
+🔹 Marketplace
+Browse all tokenized assets.
+
+Filter by category or funding progress.
+
+Click to view asset details and see available lending opportunities.
+
+🔹 Lend
+Lend ETH to partially fund an asset.
+
+Choose amount and get corresponding LendingTokens.
+
+Wallet connects for confirmation and transaction.
+
+User sees balance update and lending record.
+
+🔹 Portfolio (Asset Manager)
+See all assets a user owns or has funded.
+
+View lending shares, claimable interest, or withdrawal rights.
+
+Optionally show estimated yield and lending terms.
+
+🔹 Transaction Viewer
+Explore a full audit trail of all asset and lending transactions.
+
+Filter by user or specific asset.
+
+Acts as a public ledger UI for compliance and transparency.
+
+📜 Smart Contract Overview
+🧱 AssetNFT.sol
+Implements ERC-721 for real-world assets.
+
+Maps each token ID to core metadata.
+
+Flat metadata storage: no complex nesting for simplicity.
+
+🧱 LendingToken.sol
+Implements ERC-20 (or optionally ERC-1155).
+
+Issued upon lending action.
+
+Represents proportional claim in the asset.
+
+🧱 AssetLendingLink.sol
+Combines all business logic.
+
+Links NFTs to lending tokens.
+
+Core functions:
+
+lend(): send ETH, receive LendingTokens
+
+repay(): borrower repays
+
+withdraw(): lenders get their funds or share
+
+lock/unlock(): access control and dispute resolution
+
+🧪 Testing Requirements
+All contract functions must be unit-tested with Hardhat.
+
+Test lending lifecycle: lend → repay → withdraw.
+
+Run tests locally and on Hedera Testnet.
+
+Validate:
+
+Correct mapping of ownership
+
+Accurate issuance and transfer of tokens
+
+Access control and error handling
+
+Optional: add upgrade logic hooks for future proxy upgrades.
+
+🗂 Folder Structure (Strict Layout)
+bash
+Kopieren
+Bearbeiten
+project-directory/
+├── contracts/
+│   ├── AssetNFT.sol
+│   ├── LendingToken.sol
+│   └── AssetLendingLink.sol
+├── frontend/
+│   ├── components/
+│   ├── pages/
+│   └── styles/
+├── backend/
+│   └── (Optional API endpoints or indexer functions)
+├── scripts/
+│   └── Deployment and admin scripts
+├── test/
+│   └── Hardhat unit tests
+└── README.md
+🚀 Deployment Process
+Contracts
+
+Deploy smart contracts locally (Hardhat).
+
+Deploy on Hedera Testnet via JSON-RPC.
+
+Frontend
+
+Connect UI components to deployed contract addresses.
+
+Update ABIs and contract addresses in the frontend.
+
+Deploy frontend via Vercel or similar.
+
+✅ Best Practices Followed
+Flat mappings over nested structures for simplicity and speed.
+
+One smart contract deployment for MVP.
+
+Feature-first commits with minimal coupling.
+
+Events for all state changes to enable clean off-chain indexing.
+
+Modular UI – easy to expand or replace individual views.
+
+🔄 Planned Features (Beyond MVP)
+Multi-currency asset values and conversion logic
+
+AI document processing → token metadata automation
+
+Lending/repayment calculators
+
+Liquidation, dispute handling, lockout logic
+
+Multi-lender aggregation
+
+Asset bundling
+
+Admin/operator roles and access rights
+
+👨‍💻 Handoff Notes for Engineers
+To continue development or audit the system, engineers should:
+
+Understand the smart contract relationships (NFT ↔ LendingToken via AssetLendingLink).
+
+Read through all unit tests to verify flows.
+
+Connect the frontend components to smart contract calls.
+
+Deploy the contracts to Hedera and configure the UI accordingly.
+
+Use the existing structure as a strict guide for adding new features.
+
+🎯 Summary
+The Tokenized Marketplace is a Hedera-based platform that transforms physical assets into digital NFTs and enables co-funding via lending tokens. It is modular, auditable, and designed for phased growth. The MVP implementation includes all core flows – asset creation, lending, ownership tracking – and is ready for testing and deployment.
+
+This documentation serves as a complete guide for frontend, backend, and smart contract developers to continue or build upon the system.
+
+
+
+
+
