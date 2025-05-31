@@ -1,33 +1,56 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useAccount } from "wagmi";
+import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
+import { useEffect, useState } from "react";
 
 export default function PortfolioPage() {
+  const { address } = useAccount();
+  const { data: balance } = useScaffoldReadContract({
+    contractName: "AssetNFT",
+    functionName: "balanceOf",
+    args: [address],
+  });
+
   const [assets, setAssets] = useState<any[]>([]);
-  const [lending, setLending] = useState<any[]>([]);
-  const userAddress = "0xabc..."; // TODO: Replace with wallet address from context
 
   useEffect(() => {
-    fetch("/api/assets").then(res => res.json()).then(data => setAssets(data.assets));
-    fetch("/api/lending").then(res => res.json()).then(data => setLending(data.lending));
-  }, []);
-
-  // Filter lending records for this user
-  const myLending = lending.filter(l => l.lender === userAddress);
-  const myPortfolio = myLending.map(l => {
-    const asset = assets.find(a => a.id === l.assetId);
-    return asset ? { ...asset, amount: l.amount } : null;
-  }).filter(Boolean);
+    const fetchAssets = async () => {
+      if (!address || !balance) return;
+      const assetPromises = [];
+      for (let i = 0; i < Number(balance); i++) {
+        assetPromises.push(
+          window.scaffoldEth?.readContract({
+            contractName: "AssetNFT",
+            functionName: "tokenOfOwnerByIndex",
+            args: [address, i],
+          })
+        );
+      }
+      const tokenIds = await Promise.all(assetPromises);
+      const metaPromises = tokenIds.map((tokenId: any) =>
+        window.scaffoldEth?.readContract({
+          contractName: "AssetNFT",
+          functionName: "getAssetMetadata",
+          args: [tokenId],
+        }).then((meta: any) => ({ ...meta, tokenId }))
+      );
+      const metas = await Promise.all(metaPromises);
+      setAssets(metas);
+    };
+    fetchAssets();
+  }, [address, balance]);
 
   return (
     <div className="max-w-2xl mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">My Portfolio</h1>
       <div className="space-y-4">
-        {myPortfolio.map(asset => (
-          <div key={asset.id} className="card bg-base-100 shadow p-4">
+        {assets.length === 0 && <div>No assets found.</div>}
+        {assets.map(asset => (
+          <div key={asset.tokenId} className="card bg-base-100 shadow p-4">
             <h2 className="font-bold text-lg">{asset.name}</h2>
-            <div>Amount Lent: {asset.amount} ETH</div>
-            <div>Claimable Interest: 0 ETH</div>
-            <button className="btn btn-success mt-2">Claim</button>
+            <div>Token ID: {asset.tokenId}</div>
+            <div>Category: {asset.category}</div>
+            <div>Description: {asset.description}</div>
           </div>
         ))}
       </div>

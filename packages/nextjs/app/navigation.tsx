@@ -10,6 +10,7 @@ export default function Navigation() {
         <Link className="btn btn-ghost" href="/lend">Lend</Link>
         <Link className="btn btn-ghost" href="/portfolio">Portfolio</Link>
         <Link className="btn btn-ghost" href="/blockexplorer">Transactions</Link>
+        <Link className="btn btn-ghost" href="/lenders">Lender Dashboard</Link>
       </div>
     </nav>
   );
