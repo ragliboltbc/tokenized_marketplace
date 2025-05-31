@@ -40,7 +40,7 @@ export default function MintAssetPage() {
           required
           autoComplete="off"
           style={{
-            color: "#1e293b",
+            color: "#f9fbff", // brighter text color for dark backgrounds
             background: "rgba(255,255,255,0.05)",
             zIndex: 10,
             position: "relative",
@@ -55,7 +55,7 @@ export default function MintAssetPage() {
           required
           autoComplete="off"
           style={{
-            color: "#1e293b",
+            color: "#f9fbff", // brighter text color for dark backgrounds
             background: "rgba(255,255,255,0.05)",
             zIndex: 10,
             position: "relative",
@@ -70,7 +70,7 @@ export default function MintAssetPage() {
           required
           autoComplete="off"
           style={{
-            color: "#1e293b",
+            color: "#f9fbff", // brighter text color for dark backgrounds
             background: "rgba(255,255,255,0.05)",
             zIndex: 10,
             position: "relative",
@@ -85,7 +85,7 @@ export default function MintAssetPage() {
           required
           autoComplete="off"
           style={{
-            color: "#1e293b",
+            color: "#f9fbff", // brighter text color for dark backgrounds
             background: "rgba(255,255,255,0.05)",
             zIndex: 10,
             position: "relative",
@@ -101,7 +101,7 @@ export default function MintAssetPage() {
           required
           autoComplete="off"
           style={{
-            color: "#1e293b",
+            color: "#f9fbff", // brighter text color for dark backgrounds
             background: "rgba(255,255,255,0.05)",
             zIndex: 10,
             position: "relative",
