@@ -10,6 +10,11 @@ const ScaffoldEthApp = ({ children }: { children: React.ReactNode }) => {
   return (
     <html suppressHydrationWarning>
       <body>
+        <div className="floating-elements">
+          <div className="floating-element"></div>
+          <div className="floating-element"></div>
+          <div className="floating-element"></div>
+        </div>
         <ThemeProvider enableSystem>
           <ScaffoldEthAppWithProviders>{children}</ScaffoldEthAppWithProviders>
         </ThemeProvider>
