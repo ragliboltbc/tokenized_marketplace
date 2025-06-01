@@ -1,3 +1,4 @@
+import ThreeBackground from "../components/ThreeBackground";
 import "@rainbow-me/rainbowkit/styles.css";
 import "~~/styles/globals.css";
 import { getMetadata } from "~~/utils/scaffold-eth/getMetadata";

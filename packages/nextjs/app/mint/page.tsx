@@ -1,5 +1,6 @@
 "use client";
 
+
 import { useState } from "react";
 import { useUser } from "../../components/UserContext";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
@@ -175,4 +176,6 @@ export default function MintAssetPage() {
       {txHash && <div className="mt-4 text-green-600 break-all">Tx Result: {txHash}</div>}
     </div>
   );
+}
+
 }
