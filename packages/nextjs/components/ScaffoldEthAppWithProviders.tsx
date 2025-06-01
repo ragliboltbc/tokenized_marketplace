@@ -55,7 +55,7 @@ export const ScaffoldEthAppWithProviders = ({ children }: { children: React.Reac
           theme={mounted ? (isDarkMode ? darkTheme() : lightTheme()) : lightTheme()}
         >
           <UserProvider>
-            <ScaffoldEthApp>{children}</ScaffoldEthApp>
+          <ScaffoldEthApp>{children}</ScaffoldEthApp>
           </UserProvider>
         </RainbowKitProvider>
       </QueryClientProvider>

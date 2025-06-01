@@ -24,65 +24,54 @@ const categoryFields = {
 
 export default function MintAssetPage() {
   const [category, setCategory] = useState("");
-  const [form, setForm] = useState<any>({
-    name: "",
-    estimatedValue: "",
-    description: "",
-  });
-  const [legalDoc, setLegalDoc] = useState<File | null>(null);
+  const [form, setForm] = useState({ name: "", estimatedValue: "", description: "" });
+  const [legalDoc, setLegalDoc] = useState(null);
   const [aiValidated, setAiValidated] = useState(false);
   const [loading, setLoading] = useState(false);
   const [txHash, setTxHash] = useState("");
   const { currentUser } = useUser();
   const chainId = useChainId();
 
-  const contractAvailable = (deployedContracts as any)?.[String(chainId)]?.AssetNFT?.address;
-  console.log(chainId, deployedContracts);
-  const { writeContractAsync } = useScaffoldWriteContract({
-    contractName: "AssetNFT",
-  });
+  const contractAvailable = deployedContracts?.[String(chainId)]?.AssetNFT?.address;
+  const { writeContractAsync } = useScaffoldWriteContract({ contractName: "AssetNFT" });
 
-  const toTinybars = (hbar: string | number): bigint => {
+  const toTinybars = (hbar) => {
     const num = Number(hbar);
-    if (isNaN(num) || !isFinite(num)) return BigInt(0);
-    return BigInt(Math.floor(Number(num) * 100_000_000));
+    return isNaN(num) || !isFinite(num) ? BigInt(0) : BigInt(Math.floor(num * 100_000_000));
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleCategoryChange = (e) => {
     setCategory(e.target.value);
     setForm({ ...form });
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (e) => {
     if (e.target.files?.[0]) setLegalDoc(e.target.files[0]);
   };
 
-  const handleValidateAI = () => {
-    setAiValidated(true);
-  };
+  const handleValidateAI = () => setAiValidated(true);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!contractAvailable) {
       alert("Contract not deployed on this network. Please run `yarn deploy`.");
       return;
     }
-
     setLoading(true);
     try {
-      const args: [string, string, string, string, string, string, string, bigint, string] = [
+      const args = [
         String(currentUser.address),
         String(form.name || ""),
         String(category || ""),
         String(form.description || ""),
         String(form.assetType || ""),
         String(form.vin || form.legalId || ""),
-        String(form.brand || ""),
-        toTinybars(Number(form.estimatedValue ?? "0")),
+        String(form.brand || form.model || ""),
+        toTinybars(form.estimatedValue ?? "0"),
         String(form.imageUrl || "https://images.unsplash.com/photo-1511918984145-48de785d4c4e?auto=format&fit=crop&w=400&q=80")
       ];
 
@@ -93,13 +82,13 @@ export default function MintAssetPage() {
       });
 
       setTxHash(tx || "Success (no tx hash returned)");
-    } catch (err: any) {
+    } catch (err) {
       setTxHash("Error: " + (err?.message || "Unknown error"));
     }
     setLoading(false);
   };
 
-  const dynamicFields = categoryFields[category as keyof typeof categoryFields] || [];
+  const dynamicFields = categoryFields[category] || [];
 
   return (
     <div className="max-w-xl mx-auto p-4">
@@ -163,6 +152,14 @@ export default function MintAssetPage() {
             required
           />
         ))}
+
+        <input
+          name="imageUrl"
+          placeholder="Image URL (optional)"
+          className="input input-bordered w-full"
+          value={form.imageUrl || ""}
+          onChange={handleChange}
+        />
 
         <div>
           <label className="block mb-1 font-medium">Upload Legal Document</label>

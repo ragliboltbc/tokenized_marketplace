@@ -15,7 +15,7 @@ const Debug: NextPage = () => {
       <ContractUI contractName="LendingToken" />
       <ContractUI contractName="AssetLendingLink" />
       <ContractUI contractName="Marketplace" />
-    </div>
+      </div>
   );
 };
 

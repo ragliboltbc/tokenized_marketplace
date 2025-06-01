@@ -7,7 +7,7 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 const deployedContracts = {
   296: {
     AssetNFT: {
-      address: "0x8341B8de666E5278D3C9105763D17E27c478387f",
+      address: "0xc5AcffD7517D8C2679226f403a5313ee5F64C761",
       abi: [
         {
           inputs: [
@@ -121,6 +121,11 @@ const deployedContracts = {
                   internalType: "uint256",
                   name: "estimatedValue",
                   type: "uint256",
+                },
+                {
+                  internalType: "string",
+                  name: "imageUrl",
+                  type: "string",
                 },
               ],
               indexed: false,
@@ -239,6 +244,11 @@ const deployedContracts = {
               name: "estimatedValue",
               type: "uint256",
             },
+            {
+              internalType: "string",
+              name: "imageUrl",
+              type: "string",
+            },
           ],
           stateMutability: "view",
           type: "function",
@@ -292,46 +302,44 @@ const deployedContracts = {
           name: "getAssetMetadata",
           outputs: [
             {
-              components: [
-                {
-                  internalType: "string",
-                  name: "name",
-                  type: "string",
-                },
-                {
-                  internalType: "string",
-                  name: "category",
-                  type: "string",
-                },
-                {
-                  internalType: "string",
-                  name: "description",
-                  type: "string",
-                },
-                {
-                  internalType: "string",
-                  name: "assetType",
-                  type: "string",
-                },
-                {
-                  internalType: "string",
-                  name: "legalId",
-                  type: "string",
-                },
-                {
-                  internalType: "string",
-                  name: "brand",
-                  type: "string",
-                },
-                {
-                  internalType: "uint256",
-                  name: "estimatedValue",
-                  type: "uint256",
-                },
-              ],
-              internalType: "struct AssetNFT.AssetMetadata",
-              name: "",
-              type: "tuple",
+              internalType: "string",
+              name: "name",
+              type: "string",
+            },
+            {
+              internalType: "string",
+              name: "category",
+              type: "string",
+            },
+            {
+              internalType: "string",
+              name: "description",
+              type: "string",
+            },
+            {
+              internalType: "string",
+              name: "assetType",
+              type: "string",
+            },
+            {
+              internalType: "string",
+              name: "legalId",
+              type: "string",
+            },
+            {
+              internalType: "string",
+              name: "brand",
+              type: "string",
+            },
+            {
+              internalType: "uint256",
+              name: "estimatedValue",
+              type: "uint256",
+            },
+            {
+              internalType: "string",
+              name: "imageUrl",
+              type: "string",
             },
           ],
           stateMutability: "view",
@@ -643,6 +651,19 @@ const deployedContracts = {
               internalType: "string",
               name: "",
               type: "string",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "totalMinted",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
             },
           ],
           stateMutability: "view",
@@ -1150,7 +1171,7 @@ const deployedContracts = {
       },
     },
     Marketplace: {
-      address: "0x7f7b7759bFF6FE9Ff8E4488BA3f7eeE0FbEdE0A3",
+      address: "0xeB8dca57B3E34d77462Fee8A937763647B77751f",
       abi: [
         {
           inputs: [
@@ -1390,6 +1411,24 @@ const deployedContracts = {
             },
           ],
           stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "tokenId",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "price",
+              type: "uint256",
+            },
+          ],
+          name: "listAsset",
+          outputs: [],
+          stateMutability: "nonpayable",
           type: "function",
         },
         {
