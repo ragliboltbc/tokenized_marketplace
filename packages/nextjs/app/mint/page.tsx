@@ -5,6 +5,9 @@ import { useUser } from "../../components/UserContext";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { useChainId } from "wagmi";
 import deployedContracts from "~~/contracts/deployedContracts";
+import { useAccount } from "wagmi";
+
+
 
 const categoryFields = {
   Cars: [
@@ -30,6 +33,7 @@ export default function MintAssetPage() {
   const [loading, setLoading] = useState(false);
   const [txHash, setTxHash] = useState("");
   const { currentUser } = useUser();
+  const { address } = useAccount();
   const chainId = useChainId();
 
   const contractAvailable = deployedContracts?.[String(chainId)]?.AssetNFT?.address;

@@ -16,7 +16,7 @@ export default function Navigation() {
         {isHedera ? (
           <a
             className="btn btn-ghost"
-            href="https://blockscout.com/hedera/testnet/"
+            href="https://blockscout.com/"
             target="_blank"
             rel="noopener noreferrer"
           >
