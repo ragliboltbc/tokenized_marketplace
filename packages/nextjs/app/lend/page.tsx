@@ -14,10 +14,13 @@ export default function LendPage() {
       .then(data => setAssets(data.assets));
   }, []);
 
+  const toTinybars = (hbar: string | number) => BigInt(Math.floor(Number(hbar) * 100_000_000));
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    // TODO: Call contract to lend ETH
+    const tinybarAmount = toTinybars(amount);
+    // TODO: Call contract to lend HBAR
     setTimeout(() => {
       setTxHash("0x456...def");
       setLoading(false);
@@ -34,7 +37,7 @@ export default function LendPage() {
             <option key={asset.id} value={asset.id}>{asset.name}</option>
           ))}
         </select>
-        <input name="amount" placeholder="Amount (ETH)" type="number" className="input input-bordered w-full" value={amount} onChange={e => setAmount(e.target.value)} required />
+        <input name="amount" placeholder="Amount (HBAR)" type="number" className="input input-bordered w-full" value={amount} onChange={e => setAmount(e.target.value)} required />
         <button type="submit" className="btn btn-primary w-full" disabled={loading}>{loading ? "Lending..." : "Lend"}</button>
       </form>
       {txHash && <div className="mt-4 text-green-600">Lent! Tx: {txHash}</div>}

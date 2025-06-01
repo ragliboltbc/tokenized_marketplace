@@ -13,7 +13,26 @@ export const DEFAULT_ALCHEMY_API_KEY = "oKxs-03sij-U_N0iOlrSsZFr29-IqbuF";
 
 const scaffoldConfig = {
   // The networks on which your DApp is live
-  targetNetworks: [chains.hardhat],
+  targetNetworks: [
+    {
+      id: 296, // Hedera Testnet chainId
+      name: "Hedera Testnet",
+      rpcUrls: {
+        default: {
+          http: ["https://testnet.hashio.io/api"], // Hedera JSON-RPC Relay
+        },
+      },
+      nativeCurrency: {
+        name: "HBAR",
+        symbol: "HBAR",
+        decimals: 18,
+      },
+      blockExplorers: {
+        default: { name: "HashScan", url: "https://hashscan.io/testnet" },
+      },
+    },
+    chains.hardhat,
+  ],
 
   // The interval at which your front-end polls the RPC servers for new data
   // it has no effect if you only target the local network (default is 4000)

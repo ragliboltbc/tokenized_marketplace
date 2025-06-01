@@ -8,6 +8,7 @@ import { hardhat } from "viem/chains";
 import { Bars3Icon, BugAntIcon } from "@heroicons/react/24/outline";
 import { FaucetButton, RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 import { useOutsideClick, useTargetNetwork } from "~~/hooks/scaffold-eth";
+import UserDropdown from "./UserDropdown";
 
 type HeaderMenuLink = {
   label: string;
@@ -96,6 +97,7 @@ export const Header = () => {
         </ul>
       </div>
       <div className="navbar-end grow mr-4">
+        <UserDropdown />
         <RainbowKitCustomConnectButton />
         {isLocalNetwork && <FaucetButton />}
       </div>

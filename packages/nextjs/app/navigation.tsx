@@ -1,6 +1,10 @@
+"use client";
 import Link from "next/link";
+import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
 
 export default function Navigation() {
+  const { targetNetwork } = useTargetNetwork();
+  const isHedera = targetNetwork.id === 296;
   return (
     <nav className="navbar bg-base-200 mb-4">
       <div className="container mx-auto flex gap-4">
@@ -9,7 +13,18 @@ export default function Navigation() {
         <Link className="btn btn-ghost" href="/marketplace">Marketplace</Link>
         <Link className="btn btn-ghost" href="/lend">Lend</Link>
         <Link className="btn btn-ghost" href="/portfolio">Portfolio</Link>
-        <Link className="btn btn-ghost" href="/blockexplorer">Transactions</Link>
+        {isHedera ? (
+          <a
+            className="btn btn-ghost"
+            href="https://hashscan.io/testnet"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            HashScan Explorer
+          </a>
+        ) : (
+          <Link className="btn btn-ghost" href="/blockexplorer">Transactions</Link>
+        )}
         <Link className="btn btn-ghost" href="/lenders">Lender Dashboard</Link>
       </div>
     </nav>

@@ -27,13 +27,19 @@ export default function PortfolioPage() {
         );
       }
       const tokenIds = await Promise.all(assetPromises);
-      const metaPromises = tokenIds.map((tokenId: any) =>
-        window.scaffoldEth?.readContract({
+      const metaPromises = tokenIds.map(async (tokenId: any) => {
+        const meta = await window.scaffoldEth?.readContract({
           contractName: "AssetNFT",
           functionName: "getAssetMetadata",
           args: [tokenId],
-        }).then((meta: any) => ({ ...meta, tokenId }))
-      );
+        });
+        const owner = await window.scaffoldEth?.readContract({
+          contractName: "AssetNFT",
+          functionName: "ownerOf",
+          args: [tokenId],
+        });
+        return { ...meta, tokenId, owner };
+      });
       const metas = await Promise.all(metaPromises);
       setAssets(metas);
     };
@@ -51,6 +57,7 @@ export default function PortfolioPage() {
             <div>Token ID: {asset.tokenId}</div>
             <div>Category: {asset.category}</div>
             <div>Description: {asset.description}</div>
+            <div>Owner: {asset.owner}</div>
           </div>
         ))}
       </div>

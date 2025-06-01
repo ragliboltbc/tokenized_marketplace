@@ -5,7 +5,7 @@ import "./AssetNFT.sol";
 import "./LendingToken.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract AssetLendingLink is Ownable(msg.sender) {
+contract AssetLendingLink is Ownable {
     AssetNFT public assetNFT;
     LendingToken public lendingToken;
 
@@ -24,7 +24,8 @@ contract AssetLendingLink is Ownable(msg.sender) {
     event Locked(uint256 indexed tokenId);
     event Unlocked(uint256 indexed tokenId);
 
-    constructor(address assetNFT_, address lendingToken_) {
+    constructor(address initialOwner, address assetNFT_, address lendingToken_) {
+        _transferOwnership(initialOwner);
         assetNFT = AssetNFT(assetNFT_);
         lendingToken = LendingToken(lendingToken_);
     }
@@ -70,4 +71,4 @@ contract AssetLendingLink is Ownable(msg.sender) {
         lendingInfos[tokenId].locked = false;
         emit Unlocked(tokenId);
     }
-} 
+}
