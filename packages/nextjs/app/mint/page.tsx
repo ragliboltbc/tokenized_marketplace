@@ -1,5 +1,6 @@
 "use client";
 
+
 import { useState } from "react";
 import { useUser } from "../../components/UserContext";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
@@ -29,7 +30,7 @@ export default function MintAssetPage() {
     estimatedValue: "",
     description: "",
   });
-  const [legalDoc, setLegalDoc] = useState<File | null>(null);
+  // const [legalDoc, setLegalDoc] = useState<File | null>(null);
   const [aiValidated, setAiValidated] = useState(false);
   const [loading, setLoading] = useState(false);
   const [txHash, setTxHash] = useState("");
@@ -54,7 +55,7 @@ export default function MintAssetPage() {
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files?.[0]) setLegalDoc(e.target.files[0]);
+    if (e.target.files?.[0]) //setLegalDoc(e.target.files[0]);
   };
 
   const handleValidateAI = () => {
