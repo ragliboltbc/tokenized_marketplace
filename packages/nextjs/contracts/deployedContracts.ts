@@ -403,6 +403,11 @@ const deployedContracts = {
               name: "estimatedValue_",
               type: "uint256",
             },
+            {
+              internalType: "string",
+              name: "imageUrl_",
+              type: "string",
+            },
           ],
           name: "mint",
           outputs: [

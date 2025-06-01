@@ -6,6 +6,8 @@ import { usePublicClient } from "wagmi";
 
 const DEMO_DEPLOYER = "0x766bcFcc54972643263A24B13a0219bfA88A2513".toLowerCase();
 
+const fromTinybars = (tinybars: string | number | bigint) => Number(tinybars) / 100_000_000;
+
 export default function PortfolioPage() {
   const { address } = useAccount();
   const publicClient = usePublicClient();
@@ -112,7 +114,7 @@ export default function PortfolioPage() {
               <div>Category: {asset.category}</div>
               <div>Description: {asset.description}</div>
               <div>Owner: {asset.owner}</div>
-              <div>Estimated Value: {asset.estimatedValue?.toString?.()} HBAR</div>
+              <div>Estimated Value: {fromTinybars(asset.estimatedValue)} HBAR</div>
             </div>
           </div>
         ))}

@@ -45,7 +45,7 @@ export default function MintAssetPage() {
   const toTinybars = (hbar: string | number): bigint => {
     const num = Number(hbar);
     if (isNaN(num) || !isFinite(num)) return BigInt(0);
-    return BigInt(Math.floor(num * 100_000_000));
+    return BigInt(Math.floor(Number(num) * 100_000_000));
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -74,15 +74,16 @@ export default function MintAssetPage() {
 
     setLoading(true);
     try {
-      const args: [string, string, string, string, string, string, string, bigint] = [
-        currentUser.address,
-        form.name || "",
-        category || "",
-        form.description || "",
-        form.assetType || "",
-        form.vin || form.legalId || "",
-        form.brand || "",
-        toTinybars(form.estimatedValue ?? "0"),
+      const args: [string, string, string, string, string, string, string, bigint, string] = [
+        String(currentUser.address),
+        String(form.name || ""),
+        String(category || ""),
+        String(form.description || ""),
+        String(form.assetType || ""),
+        String(form.vin || form.legalId || ""),
+        String(form.brand || ""),
+        toTinybars(Number(form.estimatedValue ?? "0")),
+        String(form.imageUrl || "https://images.unsplash.com/photo-1511918984145-48de785d4c4e?auto=format&fit=crop&w=400&q=80")
       ];
 
       const tx = await writeContractAsync({
