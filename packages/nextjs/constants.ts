@@ -1,0 +1,6 @@
+export const CONTRACTS = {
+  assetNFT: "0xF4D1b4107dc50AEec26a0EF11fc9f36575D1a778",
+  lendingToken: "0x2951f8590C5668cD013ea8Ac510Aa8d2DbE3ea68",
+  assetLendingLink: "0x6a6aD72EC61D10EaC9eE8c9731Cccfc36e0C41c5",
+  marketplace: "0xA05D31609231f9705d3Eb46c0b4c1eF9db80A15C",
+}; 

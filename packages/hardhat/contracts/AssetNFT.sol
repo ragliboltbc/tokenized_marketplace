@@ -13,6 +13,7 @@ contract AssetNFT is ERC721Enumerable, Ownable {
         string legalId;
         string brand;
         uint256 estimatedValue;
+        string imageUrl;
     }
 
     uint256 public nextTokenId;
@@ -32,17 +33,28 @@ contract AssetNFT is ERC721Enumerable, Ownable {
         string memory assetType_,
         string memory legalId_,
         string memory brand_,
-        uint256 estimatedValue_
-    ) external onlyOwner returns (uint256) {
+        uint256 estimatedValue_,
+        string memory imageUrl_
+    ) external returns (uint256) {
         uint256 tokenId = nextTokenId++;
         _safeMint(to, tokenId);
-        assetMetadata[tokenId] = AssetMetadata(name_, category_, description_, assetType_, legalId_, brand_, estimatedValue_);
+        assetMetadata[tokenId] = AssetMetadata(name_, category_, description_, assetType_, legalId_, brand_, estimatedValue_, imageUrl_);
         emit AssetMinted(tokenId, to, assetMetadata[tokenId]);
         return tokenId;
     }
 
-    function getAssetMetadata(uint256 tokenId) external view returns (AssetMetadata memory) {
-        return assetMetadata[tokenId];
+    function getAssetMetadata(uint256 tokenId) external view returns (
+        string memory name,
+        string memory category,
+        string memory description,
+        string memory assetType,
+        string memory legalId,
+        string memory brand,
+        uint256 estimatedValue,
+        string memory imageUrl
+    ) {
+        AssetMetadata memory m = assetMetadata[tokenId];
+        return (m.name, m.category, m.description, m.assetType, m.legalId, m.brand, m.estimatedValue, m.imageUrl);
     }
 
     function supportsInterface(bytes4 interfaceId)
@@ -61,5 +73,9 @@ contract AssetNFT is ERC721Enumerable, Ownable {
         uint256 batchSize
     ) internal override(ERC721Enumerable) {
         super._beforeTokenTransfer(from, to, tokenId, batchSize);
+    }
+
+    function totalMinted() public view returns (uint256) {
+        return nextTokenId;
     }
 }

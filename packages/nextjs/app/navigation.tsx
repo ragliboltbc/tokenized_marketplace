@@ -16,11 +16,11 @@ export default function Navigation() {
         {isHedera ? (
           <a
             className="btn btn-ghost"
-            href="https://hashscan.io/testnet"
+            href="https://blockscout.com/hedera/testnet/"
             target="_blank"
             rel="noopener noreferrer"
           >
-            HashScan Explorer
+            Blockscout Explorer
           </a>
         ) : (
           <Link className="btn btn-ghost" href="/blockexplorer">Transactions</Link>

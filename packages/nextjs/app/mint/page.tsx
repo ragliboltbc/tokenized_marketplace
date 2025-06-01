@@ -36,13 +36,17 @@ export default function MintAssetPage() {
   const { currentUser } = useUser();
   const chainId = useChainId();
 
-  const contractAvailable = deployedContracts?.[chainId]?.AssetNFT?.address;
+  const contractAvailable = (deployedContracts as any)?.[String(chainId)]?.AssetNFT?.address;
   console.log(chainId, deployedContracts);
   const { writeContractAsync } = useScaffoldWriteContract({
     contractName: "AssetNFT",
   });
 
-  const toTinybars = (hbar: string | number) => BigInt(Math.floor(Number(hbar) * 100_000_000));
+  const toTinybars = (hbar: string | number): bigint => {
+    const num = Number(hbar);
+    if (isNaN(num) || !isFinite(num)) return BigInt(0);
+    return BigInt(Math.floor(num * 100_000_000));
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -70,20 +74,21 @@ export default function MintAssetPage() {
 
     setLoading(true);
     try {
-      const args = [
+      const args: [string, string, string, string, string, string, string, bigint] = [
         currentUser.address,
-        form.name,
-        category,
-        form.description,
+        form.name || "",
+        category || "",
+        form.description || "",
         form.assetType || "",
         form.vin || form.legalId || "",
         form.brand || "",
-        toTinybars(form.estimatedValue),
+        toTinybars(form.estimatedValue ?? "0"),
       ];
 
       const tx = await writeContractAsync({
         functionName: "mint",
         args,
+        gas: 1_000_000,
       });
 
       setTxHash(tx || "Success (no tx hash returned)");

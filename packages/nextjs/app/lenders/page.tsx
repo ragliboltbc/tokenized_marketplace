@@ -2,46 +2,106 @@
 import { useState, useEffect } from "react";
 import { useUser } from "../../components/UserContext";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
+import { CONTRACTS } from "../../constants";
+import { usePublicClient } from "wagmi";
+
+const toTinybars = (hbar: string | number) => BigInt(Math.floor(Number(hbar) * 100_000_000));
+const fromTinybars = (tinybars: string | number | bigint) => Number(tinybars) / 100_000_000;
 
 export default function LendersPage() {
   const { currentUser } = useUser();
   const { writeContractAsync: contributeToOffer } = useScaffoldWriteContract({ contractName: "Marketplace" });
+  const publicClient = usePublicClient();
   const [offers, setOffers] = useState<any[]>([]);
   const [contributeId, setContributeId] = useState<number | null>(null);
   const [amount, setAmount] = useState("");
   const [msg, setMsg] = useState("");
   const [refresh, setRefresh] = useState(0);
 
-  const toTinybars = (hbar: string | number) => BigInt(Math.floor(Number(hbar) * 100_000_000));
-  const fromTinybars = (tinybars: string | number | bigint) => Number(tinybars) / 100_000_000;
-
-  // Fetch open offers (for demo, check first 10 offers)
   useEffect(() => {
     const fetchOffers = async () => {
-      const total = 10;
+      if (!publicClient) return setOffers([]);
+      // Get nextOfferId (total offers)
+      let totalOffers = 0n;
+      try {
+        totalOffers = await publicClient.readContract({
+          address: CONTRACTS.marketplace as `0x${string}`,
+          abi: [
+            {
+              "inputs": [],
+              "name": "nextOfferId",
+              "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+              "stateMutability": "view",
+              "type": "function"
+            }
+          ],
+          functionName: "nextOfferId",
+        });
+      } catch {
+        setOffers([]);
+        return;
+      }
+      // For each offer, get offer data and asset metadata
       const offerPromises = [];
-      for (let i = 0; i < total; i++) {
+      for (let i = 0n; i < totalOffers; i++) {
         offerPromises.push(
-          window.scaffoldEth?.readContract({
-            contractName: "Marketplace",
-            functionName: "offers",
-            args: [i],
-          }).then(async offer => {
-            if (!offer || offer.status !== 0) return null; // Only open offers
-            const asset = await window.scaffoldEth?.readContract({
-              contractName: "AssetNFT",
+          (async () => {
+            const offer = await publicClient.readContract({
+              address: CONTRACTS.marketplace as `0x${string}`,
+              abi: [
+                {
+                  "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+                  "name": "offers",
+                  "outputs": [
+                    { "internalType": "uint256", "name": "offerId", "type": "uint256" },
+                    { "internalType": "uint256", "name": "tokenId", "type": "uint256" },
+                    { "internalType": "address", "name": "buyer", "type": "address" },
+                    { "internalType": "uint256", "name": "price", "type": "uint256" },
+                    { "internalType": "uint256", "name": "interestRate", "type": "uint256" },
+                    { "internalType": "uint256", "name": "duration", "type": "uint256" },
+                    { "internalType": "uint256", "name": "amountRaised", "type": "uint256" },
+                    { "internalType": "uint8", "name": "status", "type": "uint8" }
+                  ],
+                  "stateMutability": "view",
+                  "type": "function"
+                }
+              ],
+              functionName: "offers",
+              args: [i],
+            });
+            // Only show open offers (status === 0)
+            if (!offer || offer.status !== 0) return null;
+            const asset = await publicClient.readContract({
+              address: CONTRACTS.assetNFT as `0x${string}`,
+              abi: [
+                {
+                  "inputs": [{ "internalType": "uint256", "name": "tokenId", "type": "uint256" }],
+                  "name": "getAssetMetadata",
+                  "outputs": [
+                    { "internalType": "string", "name": "name", "type": "string" },
+                    { "internalType": "string", "name": "category", "type": "string" },
+                    { "internalType": "string", "name": "description", "type": "string" },
+                    { "internalType": "string", "name": "assetType", "type": "string" },
+                    { "internalType": "string", "name": "legalId", "type": "string" },
+                    { "internalType": "string", "name": "brand", "type": "string" },
+                    { "internalType": "uint256", "name": "estimatedValue", "type": "uint256" }
+                  ],
+                  "stateMutability": "view",
+                  "type": "function"
+                }
+              ],
               functionName: "getAssetMetadata",
               args: [offer.tokenId],
             });
             return { ...offer, id: i, asset };
-          })
+          })()
         );
       }
-      const all = await Promise.all(offerPromises);
-      setOffers(all.filter(Boolean));
+      const all = (await Promise.all(offerPromises)).filter(Boolean);
+      setOffers(all);
     };
     fetchOffers();
-  }, [refresh]);
+  }, [publicClient, refresh]);
 
   const handleContribute = (id: number) => {
     setContributeId(id);

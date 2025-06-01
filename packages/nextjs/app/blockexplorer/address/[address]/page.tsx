@@ -5,6 +5,7 @@ import { AddressComponent } from "~~/app/blockexplorer/_components/AddressCompon
 import deployedContracts from "~~/contracts/deployedContracts";
 import { isZeroAddress } from "~~/utils/scaffold-eth/common";
 import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
+import { getAddress } from "viem";
 
 type PageProps = {
   params: Promise<{ address: string }>;
@@ -84,7 +85,10 @@ export function generateStaticParams() {
 
 const AddressPage = async (props: PageProps) => {
   const params = await props.params;
-  const address = params?.address as string;
+  let address = params?.address as string;
+  try {
+    address = getAddress(address);
+  } catch {}
 
   if (isZeroAddress(address)) return null;
 

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { blo } from "blo";
 import { useDebounceValue } from "usehooks-ts";
-import { Address, isAddress } from "viem";
+import { Address, isAddress, getAddress } from "viem";
 import { normalize } from "viem/ens";
 import { useEnsAddress, useEnsAvatar, useEnsName } from "wagmi";
 import { CommonInputProps, InputBase, isENS } from "~~/components/scaffold-eth";
@@ -12,9 +12,15 @@ import { CommonInputProps, InputBase, isENS } from "~~/components/scaffold-eth";
 export const AddressInput = ({ value, name, placeholder, onChange, disabled }: CommonInputProps<Address | string>) => {
   // Debounce the input to keep clean RPC calls when resolving ENS names
   // If the input is an address, we don't need to debounce it
-  const [_debouncedValue] = useDebounceValue(value, 500);
-  const debouncedValue = isAddress(value) ? value : _debouncedValue;
-  const isDebouncedValueLive = debouncedValue === value;
+  let normalizedValue = value;
+  try {
+    if (typeof value === "string") {
+      normalizedValue = getAddress(value);
+    }
+  } catch {}
+  const [_debouncedValue] = useDebounceValue(normalizedValue, 500);
+  const debouncedValue = isAddress(normalizedValue) ? normalizedValue : _debouncedValue;
+  const isDebouncedValueLive = debouncedValue === normalizedValue;
 
   // If the user changes the input after an ENS name is already resolved, we want to remove the stale result
   const settledValue = isDebouncedValueLive ? debouncedValue : undefined;

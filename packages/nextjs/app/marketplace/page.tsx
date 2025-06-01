@@ -1,7 +1,9 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useUser } from "../../components/UserContext";
-import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
+import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
+import { CONTRACTS } from "../../constants";
+import { usePublicClient } from "wagmi";
 
 const toTinybars = (hbar: string | number) => BigInt(Math.floor(Number(hbar) * 100_000_000));
 const fromTinybars = (tinybars: string | number | bigint) => Number(tinybars) / 100_000_000;
@@ -10,6 +12,7 @@ export default function MarketplacePage() {
   const { currentUser } = useUser();
   const { writeContractAsync: listAsset } = useScaffoldWriteContract({ contractName: "Marketplace" });
   const { writeContractAsync: createOffer } = useScaffoldWriteContract({ contractName: "Marketplace" });
+  const publicClient = usePublicClient();
   const [tokens, setTokens] = useState<any[]>([]);
   const [listingPrice, setListingPrice] = useState("");
   const [showList, setShowList] = useState<number | null>(null);
@@ -19,33 +22,100 @@ export default function MarketplacePage() {
   const [offerMsg, setOfferMsg] = useState("");
   const [refresh, setRefresh] = useState(0);
 
-  // Fetch all tokens and their owners
   useEffect(() => {
     const fetchTokens = async () => {
-      const total = 10; // For demo, check first 10 tokens
-      const tokenPromises = [];
-      for (let i = 0; i < total; i++) {
-        tokenPromises.push(
-          window.scaffoldEth?.readContract({
-            contractName: "AssetNFT",
-            functionName: "getAssetMetadata",
-            args: [i],
-          }).then(async meta => {
-            if (!meta) return null;
-            const owner = await window.scaffoldEth?.readContract({
-              contractName: "AssetNFT",
-              functionName: "ownerOf",
-              args: [i],
-            });
-            return { ...meta, tokenId: i, owner };
-          })
+      if (!publicClient) return setTokens([]);
+      // Get total minted tokens
+      let totalMinted = 0n;
+      try {
+        totalMinted = await publicClient.readContract({
+          address: CONTRACTS.assetNFT as `0x${string}`,
+          abi: [
+            {
+              "inputs": [],
+              "name": "totalMinted",
+              "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+              "stateMutability": "view",
+              "type": "function"
+            }
+          ],
+          functionName: "totalMinted",
+        });
+      } catch {
+        setTokens([]);
+        return;
+      }
+      // For each token, get metadata, owner, and listing
+      const metaPromises = [];
+      for (let i = 0n; i < totalMinted; i++) {
+        metaPromises.push(
+          (async () => {
+            const [meta, owner, listing] = await Promise.all([
+              publicClient.readContract({
+                address: CONTRACTS.assetNFT as `0x${string}`,
+                abi: [
+                  {
+                    "inputs": [{ "internalType": "uint256", "name": "tokenId", "type": "uint256" }],
+                    "name": "getAssetMetadata",
+                    "outputs": [
+                      { "internalType": "string", "name": "name", "type": "string" },
+                      { "internalType": "string", "name": "category", "type": "string" },
+                      { "internalType": "string", "name": "description", "type": "string" },
+                      { "internalType": "string", "name": "assetType", "type": "string" },
+                      { "internalType": "string", "name": "legalId", "type": "string" },
+                      { "internalType": "string", "name": "brand", "type": "string" },
+                      { "internalType": "uint256", "name": "estimatedValue", "type": "uint256" }
+                    ],
+                    "stateMutability": "view",
+                    "type": "function"
+                  }
+                ],
+                functionName: "getAssetMetadata",
+                args: [i],
+              }),
+              publicClient.readContract({
+                address: CONTRACTS.assetNFT as `0x${string}`,
+                abi: [
+                  {
+                    "inputs": [{ "internalType": "uint256", "name": "tokenId", "type": "uint256" }],
+                    "name": "ownerOf",
+                    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+                    "stateMutability": "view",
+                    "type": "function"
+                  }
+                ],
+                functionName: "ownerOf",
+                args: [i],
+              }),
+              publicClient.readContract({
+                address: CONTRACTS.marketplace as `0x${string}`,
+                abi: [
+                  {
+                    "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+                    "name": "listings",
+                    "outputs": [
+                      { "internalType": "uint256", "name": "tokenId", "type": "uint256" },
+                      { "internalType": "address", "name": "owner", "type": "address" },
+                      { "internalType": "uint256", "name": "price", "type": "uint256" },
+                      { "internalType": "bool", "name": "listed", "type": "bool" }
+                    ],
+                    "stateMutability": "view",
+                    "type": "function"
+                  }
+                ],
+                functionName: "listings",
+                args: [i],
+              })
+            ]);
+            return { ...meta, tokenId: i, owner, listing };
+          })()
         );
       }
-      const all = await Promise.all(tokenPromises);
-      setTokens(all.filter(Boolean));
+      const all = (await Promise.all(metaPromises)).filter(Boolean);
+      setTokens(all);
     };
     fetchTokens();
-  }, [refresh]);
+  }, [publicClient, refresh]);
 
   const handleList = (tokenId: number) => {
     setShowList(tokenId);
@@ -99,6 +169,9 @@ export default function MarketplacePage() {
             <div>Category: {asset.category}</div>
             <div>Description: {asset.description}</div>
             <div>Estimated Value: {fromTinybars(asset.estimatedValue)} HBAR</div>
+            {asset.listing?.listed && (
+              <div className="text-green-600 font-bold">Listed for {fromTinybars(asset.listing.price)} HBAR</div>
+            )}
             {asset.owner === currentUser.address && (
               <>
                 <button className="btn btn-secondary mt-2 w-full" onClick={() => handleList(asset.tokenId)}>List Asset</button>
@@ -107,7 +180,7 @@ export default function MarketplacePage() {
                     <input
                       type="number"
                       className="input input-bordered w-full"
-                      placeholder="Listing Price (ETH)"
+                      placeholder="Listing Price (HBAR)"
                       value={listingPrice}
                       onChange={e => setListingPrice(e.target.value)}
                       required
@@ -117,31 +190,29 @@ export default function MarketplacePage() {
                 )}
               </>
             )}
-            {asset.owner !== currentUser.address && (
-              <>
-                <button className="btn btn-secondary mt-2 w-full" onClick={() => handleOffer(asset.tokenId)}>Initiate Purchase Offer</button>
-                {showOffer === asset.tokenId && (
-                  <form onSubmit={e => handleSubmitOffer(e, asset.tokenId, asset.estimatedValue)} className="mt-2 space-y-2">
-                    <input
-                      type="number"
-                      className="input input-bordered w-full"
-                      placeholder="Interest Rate (APR %)"
-                      value={interestRate}
-                      onChange={e => setInterestRate(e.target.value)}
-                      required
-                    />
-                    <input
-                      type="number"
-                      className="input input-bordered w-full"
-                      placeholder="Duration (days)"
-                      value={duration}
-                      onChange={e => setDuration(e.target.value)}
-                    />
-                    <button className="btn btn-primary w-full" type="submit">Submit Offer</button>
-                  </form>
-                )}
-              </>
-            )}
+            <>
+              <button className="btn btn-secondary mt-2 w-full" onClick={() => handleOffer(asset.tokenId)}>Initiate Purchase Offer</button>
+              {showOffer === asset.tokenId && (
+                <form onSubmit={e => handleSubmitOffer(e, asset.tokenId, asset.estimatedValue)} className="mt-2 space-y-2">
+                  <input
+                    type="number"
+                    className="input input-bordered w-full"
+                    placeholder="Interest Rate (APR %)"
+                    value={interestRate}
+                    onChange={e => setInterestRate(e.target.value)}
+                    required
+                  />
+                  <input
+                    type="number"
+                    className="input input-bordered w-full"
+                    placeholder="Duration (days)"
+                    value={duration}
+                    onChange={e => setDuration(e.target.value)}
+                  />
+                  <button className="btn btn-primary w-full" type="submit">Submit Offer</button>
+                </form>
+              )}
+            </>
           </div>
         ))}
       </div>
