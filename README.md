@@ -1,8 +1,10 @@
 # ⛓️🏠 Tokenized Marketplace
 
 
+🏛️ A decentralized platform for tokenizing real-world assets (RWAs) and enabling lending-based co-ownership. Built on Hedera with Scaffold-ETH 2, this marketplace lets you mint NFTs for physical assets, lend HBAR to earn fractional ownership, and manage your digital portfolio with full transparency and compliance. See [project outcome @ETHGlobal](https://ethglobal.com/showcase/tknzd-market-p-axsvn)
 
-🏛️ A decentralized platform for tokenizing real-world assets (RWAs) and enabling lending-based co-ownership. Built on Hedera with Scaffold-ETH 2, this marketplace lets you mint NFTs for physical assets, lend HBAR to earn fractional ownership, and manage your digital portfolio with full transparency and compliance.
+<img src="https://github.com/user-attachments/assets/c18d2d63-c0bb-4574-925a-207a64989ecc" alt="Marketplace logic" width="600">
+
 
 ⚙️ Built using NextJS, RainbowKit, Hardhat, Wagmi, Viem, Typescript, and deployed on **Hedera Testnet**.
 
